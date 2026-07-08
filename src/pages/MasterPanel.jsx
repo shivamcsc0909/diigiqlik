@@ -138,10 +138,7 @@ const MOCK_UPLOAD_HISTORY = MOCK_LIVE_CLASSES
     uploadDate: "2026-06-30",
   }));
 
-// ─── Helper: Backend Error Alert ─────────────────
-const showBackendError = () => {
-  alert("⚠️ Backend connection required. Simulating local action (demo mode).");
-};
+
 
 export default function MasterPanel() {
   const { masterUser, loginMaster, logoutMaster } = useAuth();

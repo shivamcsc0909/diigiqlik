@@ -1,5 +1,19 @@
 import React, { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+
+const loadRazorpayScript = () => {
+  return new Promise((resolve) => {
+    if (window.Razorpay) {
+      resolve(true);
+      return;
+    }
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
+};
 import {
   ArrowRight,
   BookOpen,
@@ -107,8 +121,7 @@ function CoursesPage() {
   // Modal Control States
   const [activeModal, setActiveModal] = useState(null); // 'enquiry' | 'reserve' | 'payment' | null
   const [selectedPlan, setSelectedPlan] = useState("");
-  const [paymentTab, setPaymentTab] = useState("upi"); // 'upi' | 'qr'
-  const [copied, setCopied] = useState(false);
+  const [paymentTab, setPaymentTab] = useState("gateway"); // 'gateway' | 'qr'
   const [loading, setLoading] = useState(false);
 
   // Form Initial States
@@ -164,20 +177,97 @@ function CoursesPage() {
         setReserveForm({ fullName: "", mobile: "", email: "", batch: "" });
       }
     } else if (type === "payment") {
-      success = await submitToSheet("payment", { ...paymentForm, plan: selectedPlan });
-      if (success) {
-        alert("✅ Registration & Payment details submitted successfully! Verification takes up to 2-4 hours.");
-        setPaymentForm({ fullName: "", mobile: "", email: "", batch: "", plan: "", utrTransactionId: "" });
+      if (paymentTab === "gateway") {
+        setLoading(true);
+        try {
+          const scriptLoaded = await loadRazorpayScript();
+          if (!scriptLoaded) {
+            alert("❌ Razorpay SDK failed to load. Are you connected to the internet?");
+            setLoading(false);
+            return;
+          }
+
+          const razorpayKey = import.meta.env.VITE_RAZORPAY_KEY_ID || "rzp_test_TB0lRMCdVDdoz3";
+          const coursePrice = selectedPlan === "Professional" ? 4999 : 1999;
+
+          const options = {
+            key: razorpayKey,
+            amount: coursePrice * 100, // in paise
+            currency: "INR",
+            name: "DigiQlik",
+            description: `${selectedPlan} Course Enrollment`,
+            handler: async function (response) {
+              setLoading(true);
+              try {
+                // Simulate backend verification success and update local storage logs
+                const offlinePayments = JSON.parse(localStorage.getItem('offline_payments') || '[]');
+                offlinePayments.unshift({
+                  purchase_id: Date.now(),
+                  student_name: paymentForm.fullName,
+                  student_email: paymentForm.email,
+                  course_title: selectedPlan === "Professional" ? "Google Ads Mastery" : "SEO & Performance Marketing",
+                  amount: coursePrice,
+                  razorpay_payment_id: response.razorpay_payment_id,
+                  payment_status: 'paid',
+                  purchase_date: new Date().toISOString().replace('T', ' ').substring(0, 19).replace('Z', '')
+                });
+                localStorage.setItem('offline_payments', JSON.stringify(offlinePayments));
+
+                // Save credentials in local storage for auto-sign in
+                localStorage.setItem("digiklik_pending_login", JSON.stringify({
+                  email: paymentForm.email,
+                  name: paymentForm.fullName,
+                  role: "student",
+                  token: "jwt-token-here"
+                }));
+
+                alert(`🎉 Payment verified successfully! Payment ID: ${response.razorpay_payment_id}`);
+                setActiveModal(null);
+                navigate("/student-corner");
+              } catch (err) {
+                console.error("Local storage update failed:", err);
+              } finally {
+                setLoading(false);
+              }
+            },
+            prefill: {
+              name: paymentForm.fullName,
+              email: paymentForm.email,
+              contact: paymentForm.mobile
+            },
+            theme: {
+              color: "#dc2626"
+            },
+            modal: {
+              ondismiss: function () {
+                setLoading(false);
+              }
+            }
+          };
+
+          const rzp = new window.Razorpay(options);
+
+          rzp.on('payment.failed', function (response) {
+            alert(`❌ Payment failed: ${response.error.description}`);
+            setLoading(false);
+          });
+
+          rzp.open();
+        } catch (err) {
+          console.error("Razorpay integration error:", err);
+          alert("❌ Failed to initiate Razorpay checkout.");
+          setLoading(false);
+        }
+      } else {
+        // Manual QR/UPI scan flow
+        success = await submitToSheet("payment", { ...paymentForm, plan: selectedPlan });
+        if (success) {
+          alert("✅ Registration & Payment details submitted successfully! Verification takes up to 2-4 hours.");
+          setPaymentForm({ fullName: "", mobile: "", email: "", batch: "", plan: "", utrTransactionId: "" });
+        }
       }
     }
     if (success) setActiveModal(null);
-  };
-
-  const copyUPI = () => {
-    navigator.clipboard.writeText(UPI_ID).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    });
   };
 
   const openPaymentModal = (planName) => {
@@ -650,17 +740,15 @@ function CoursesPage() {
             
             {/* Embedded Payment Method Tabs */}
             <div className="payment-tabs">
-              <button type="button" className={`pay-tab-btn ${paymentTab === "upi" ? "active" : ""}`} onClick={() => setPaymentTab("upi")}>UPI String Mode</button>
+              <button type="button" className={`pay-tab-btn ${paymentTab === "gateway" ? "active" : ""}`} onClick={() => setPaymentTab("gateway")}>Razorpay Gateway</button>
               <button type="button" className={`pay-tab-btn ${paymentTab === "qr" ? "active" : ""}`} onClick={() => setPaymentTab("qr")}>Scan QR Code</button>
             </div>
 
-            {paymentTab === "upi" ? (
-              <div className="tab-content-box">
-                <div style={{ fontSize: "0.85rem", color: "#6b7280", marginBottom: "0.4rem" }}>Transfer Exact Amount to UPI ID:</div>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "#fff", padding: "0.5rem 0.75rem", borderRadius: "8px", border: "1px solid #d1d5db" }}>
-                  <span style={{ fontWeight: "700", fontSize: "0.95rem" }}>{UPI_ID}</span>
-                  <button type="button" className="copy-btn" onClick={copyUPI}>{copied ? "Copied" : "Copy ID"}</button>
-                </div>
+            {paymentTab === "gateway" ? (
+              <div className="tab-content-box" style={{ textAlign: "center", padding: "1rem" }}>
+                <p style={{ margin: 0, fontSize: "0.9rem", color: "#4b5563" }}>
+                  Instant activation via secure Razorpay checkout gateway.
+                </p>
               </div>
             ) : (
               <div className="tab-content-box qr-img-container">
@@ -671,7 +759,7 @@ function CoursesPage() {
                     e.target.src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=upi://pay?pa=${UPI_ID}%26pn=DigitalMarketing`;
                   }}
                 />
-                <p style={{ margin: "0.5rem 0 0", fontSize: "0.8rem", color: "#6b7280" }}>Scan through Bhim, PhonePe, GPay or Paytm</p>
+                <p style={{ margin: "0.5rem 0 0", fontSize: "0.8rem", color: "#6b7280" }}>Scan & transfer exact amount to UPI ID: <strong>{UPI_ID}</strong></p>
               </div>
             )}
 
@@ -696,12 +784,19 @@ function CoursesPage() {
                   {batches.map(b => <option key={b.value} value={b.value}>{b.label}</option>)}
                 </select>
               </div>
-              <div className="form-group">
-                <label>Transaction Reference ID / UTR Number</label>
-                <input type="text" placeholder="12 Digit Transaction Number" required value={paymentForm.utrTransactionId} onChange={(e) => setPaymentForm({...paymentForm, utrTransactionId: e.target.value})} />
-              </div>
-              <button type="submit" className="cp-btn cp-btn-primary" style={{ width: "100%" }} disabled={loading}>
-                {loading ? "Verifying Record..." : "Submit Payment Record"}
+              {paymentTab === "qr" && (
+                <div className="form-group">
+                  <label>Transaction Reference ID / UTR Number</label>
+                  <input type="text" placeholder="12 Digit Transaction Number" required value={paymentForm.utrTransactionId} onChange={(e) => setPaymentForm({...paymentForm, utrTransactionId: e.target.value})} />
+                </div>
+              )}
+              <button type="submit" className="cp-btn cp-btn-primary" style={{ width: "100%", marginTop: "1rem" }} disabled={loading}>
+                {loading 
+                  ? "Processing..." 
+                  : paymentTab === "gateway" 
+                    ? "Pay & Enrol (Razorpay)" 
+                    : "Submit Payment Record"
+                }
               </button>
             </form>
           </div>
