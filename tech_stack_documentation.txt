@@ -1,0 +1,76 @@
+---
+
+## PROJECT TECH STACK DOCUMENTATION
+
+Project Overview:
+A modern, high-performance, single-page digital agency portfolio website named "DigiQlik", featuring advanced scroll animations, 3D cursor effects, and responsive design.
+
+Frontend:
+
+* Technology: React.js (v19)
+  Purpose: UI Component creation and view rendering.
+  Reason: Provides a declarative approach, reusable component architecture, and fast virtual DOM updates suitable for dynamic user interfaces.
+
+Backend:
+
+* Technology: None (Static SPA)
+  Purpose: Client-side only application.
+  Reason: Functions primarily as a landing/portfolio page thus not requiring a dedicated server or database backend.
+
+Styling / UI:
+
+* Technology: Vanilla CSS & Custom Utilities
+  Purpose: Application styling, layout control, and responsive design.
+  Reason: Avoids framework bloat, offering complete control over complex layouts, custom gradient effects, and specific brand guidelines without relying on external UI libraries.
+
+State Management:
+
+* Technology: React Built-in Hooks (useState, useEffect, useRef)
+  Purpose: Managing local component states and lifecycle.
+  Reason: The project is a single-page application with straightforward data-flow, making third-party state managers like Redux or Zustand unnecessary.
+
+Routing:
+
+* Technology: None (Single Page Scroll Layout)
+  Purpose: Navigating between sections.
+  Reason: Content is organized vertically with anchor links or smooth scrolling, maximizing user engagement without page reloads.
+
+Libraries & Animations:
+
+* Technology: GSAP (GreenSock Animation Platform) & Three.js
+  Purpose: Advanced scroll-triggered timeline animations and 3D WebGL cursor effects.
+  Reason: GSAP provides unmatched performance for complex DOM animations, infinite looping marquees, and scroll interactions. Three.js delivers immersive fluid cursor experiences (CursorFluid) mimicking high-end agency designs. Additionally, Lucide React is used for crisp SVG iconography.
+
+APIs / Integrations:
+
+* Technology: None explicitly defined (Form handling likely isolated)
+  Purpose: Receiving user contact inquiries.
+  Reason: Standard approach for purely frontend demonstration sites before integration with external microservices.
+
+Build Tools:
+
+* Technology: Vite
+  Purpose: Project bundling, Hot Module Replacement (HMR), and dev server.
+  Reason: Significantly faster build and startup times compared to traditional bundlers, utilizing native ES modules for rapid frontend development.
+
+Deployment:
+
+* Technology: Vercel / Netlify (Assumed Practice)
+  Purpose: Hosting the static production bundle.
+  Reason: Best-in-class platforms for hosting modern Vite/React static sites with zero-config deployments, built-in CI/CD, and global edge caching.
+
+Version Control:
+
+* Technology: Git (via GitHub/GitLab)
+  Purpose: Source code management, tracking changes, and collaboration.
+  Reason: Industry standard for version control and deploying safely via cloud pipelines.
+
+Suggestions (Optional):
+
+* Consider adding a lightweight CSS methodology like BEM or utilizing CSS Modules to encapsulate component styles further and prevent global collisions.
+* For potential future multi-page expansion (e.g., individual case study pages), introduce React Router.
+* If contact forms need real backend processing without maintaining a server, integrating a service like EmailJS, Formspree, or Web3Forms would be highly productive.
+
+---
+
+## END OF FILE

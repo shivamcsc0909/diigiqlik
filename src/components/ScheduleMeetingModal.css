@@ -1,0 +1,277 @@
+/* =========================================
+   SCHEDULE MEETING POPUP — Compact & Colorful
+   ========================================= */
+
+/* Overlay */
+.spm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 15, 30, 0.7);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  z-index: 999995;
+  animation: spmOverlayIn 0.25s ease;
+}
+
+@keyframes spmOverlayIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* Card */
+.spm-card {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  max-height: calc(100dvh - 40px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: #ffffff;
+  border-radius: 24px;
+  padding: 28px 24px 24px;
+  box-shadow:
+    0 32px 64px -12px rgba(0, 0, 0, 0.35),
+    0 0 0 1px rgba(255,255,255,0.08);
+  animation: spmCardIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* Scrollbar hidden but functional */
+  scrollbar-width: none;
+}
+.spm-card::-webkit-scrollbar { display: none; }
+
+@keyframes spmCardIn {
+  from { opacity: 0; transform: translateY(28px) scale(0.94); }
+  to   { opacity: 1; transform: translateY(0)   scale(1);    }
+}
+
+/* Gradient top accent bar */
+.spm-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 4px;
+  background: var(--gradient-primary);
+  border-radius: 24px 24px 0 0;
+}
+
+/* Close button */
+.spm-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: none;
+  background: #f1f5f9;
+  color: #475569;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+  z-index: 2;
+  flex-shrink: 0;
+}
+.spm-close:hover {
+  background: #e2e8f0;
+  transform: scale(1.08);
+}
+
+/* ── Header ── */
+.spm-header {
+  text-align: center;
+  margin-bottom: 20px;
+  padding-right: 28px; /* clear of close button */
+}
+
+.spm-emoji {
+  font-size: 2.2rem;
+  margin-bottom: 8px;
+  line-height: 1;
+}
+
+.spm-title {
+  font-size: 1.45rem;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  color: #0f172a;
+  margin: 0 0 5px;
+  line-height: 1.2;
+}
+
+.spm-sub {
+  font-size: 0.875rem;
+  color: #64748b;
+  margin: 0;
+}
+
+/* ── Form fields ── */
+.spm-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.spm-field { width: 100%; }
+
+.spm-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 10px 13px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  background: #fafafa;
+}
+
+/* Colorful accent per field */
+.spm-name:focus-within   { border-color: var(--color-primary); box-shadow: 0 0 0 3px rgba(228, 64, 59, 0.12); }
+.spm-phone:focus-within  { border-color: var(--color-secondary); box-shadow: 0 0 0 3px rgba(45, 62, 80, 0.12);  }
+.spm-email:focus-within  { border-color: var(--color-primary); box-shadow: 0 0 0 3px rgba(228, 64, 59, 0.12); }
+.spm-biz:focus-within    { border-color: var(--color-secondary); box-shadow: 0 0 0 3px rgba(45, 62, 80, 0.12); }
+
+.spm-name svg   { color: var(--color-primary); }
+.spm-phone svg  { color: var(--color-secondary); }
+.spm-email svg  { color: var(--color-primary); }
+.spm-biz svg    { color: var(--color-secondary); }
+
+.spm-input-wrap input,
+.spm-input-wrap textarea {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 0.9rem;
+  font-family: inherit;
+  color: #0f172a;
+  min-width: 0;
+}
+.spm-input-wrap input::placeholder,
+.spm-input-wrap textarea::placeholder { color: #94a3b8; }
+.spm-input-wrap textarea {
+  resize: none;
+  height: 80px;
+  padding-top: 2px;
+}
+.spm-input-wrap svg { flex-shrink: 0; }
+.spm-message { align-items: flex-start; padding-top: 12px; }
+.spm-message svg { margin-top: 2px; }
+.spm-message:focus-within { border-color: var(--color-primary); box-shadow: 0 0 0 3px rgba(228, 64, 59, 0.12); }
+
+/* ── Error ── */
+.spm-error {
+  font-size: 0.825rem;
+  color: #ef4444;
+  margin: 0;
+  padding: 0.5rem 0.75rem;
+  background: #fef2f2;
+  border-radius: 8px;
+}
+
+/* ── Actions ── */
+.spm-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.spm-btn-primary {
+  width: 100%;
+  padding: 12px;
+  background: var(--gradient-primary);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.95rem;
+  font-family: inherit;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: opacity 0.2s, transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 6px 20px rgba(228, 64, 59, 0.3);
+  letter-spacing: 0.01em;
+}
+.spm-btn-primary:hover:not(:disabled) {
+  opacity: 0.92;
+  transform: translateY(-1px);
+  box-shadow: 0 10px 28px rgba(228, 64, 59, 0.4);
+}
+.spm-btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.spm-btn-skip {
+  width: 100%;
+  padding: 9px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: #94a3b8;
+  font-size: 0.85rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.spm-btn-skip:hover { color: #64748b; }
+
+/* Spinning loader */
+.spm-spin {
+  animation: spmSpin 0.9s linear infinite;
+}
+@keyframes spmSpin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* ── Success ── */
+.spm-success {
+  text-align: center;
+  padding: 8px 0 4px;
+}
+.spm-success-icon {
+  font-size: 3rem;
+  margin-bottom: 12px;
+  line-height: 1;
+}
+.spm-success h3 {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 8px;
+}
+.spm-success p {
+  color: #64748b;
+  font-size: 0.9rem;
+  margin: 0 0 20px;
+  line-height: 1.5;
+}
+
+/* ── Mobile ── */
+@media (max-width: 480px) {
+  .spm-card {
+    padding: 24px 18px 20px;
+    border-radius: 20px;
+    max-height: calc(100dvh - 32px);
+  }
+  .spm-title { font-size: 1.3rem; }
+  .spm-input-wrap { padding: 10px 11px; }
+  .spm-input-wrap input { font-size: 0.875rem; }
+  .spm-btn-primary { font-size: 0.9rem; padding: 11px; }
+}
+
+@media (max-width: 360px) {
+  .spm-overlay { padding: 10px; }
+  .spm-card { padding: 20px 14px 16px; }
+  .spm-emoji { font-size: 1.8rem; }
+  .spm-title { font-size: 1.15rem; }
+}

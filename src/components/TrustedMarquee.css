@@ -1,0 +1,129 @@
+.trusted-section {
+  padding: 2rem 0;
+  background-color: var(--color-bg-base);
+  overflow: hidden;
+  position: relative;
+}
+
+.trusted-title {
+  text-align: center;
+  font-size: 2.5rem;
+  margin-bottom: 1.5rem;
+  font-weight: 800;
+  color: var(--color-text-main);
+}
+
+.marquee-container {
+  position: relative;
+  width: 100%;
+  max-width: var(--container-max-width);
+  margin: 0 auto;
+  overflow: hidden;
+  display: flex;
+}
+
+.marquee-fade {
+  position: absolute;
+  top: 0;
+  width: 120px;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.marquee-fade-left {
+  left: 0;
+  background: linear-gradient(
+    to right,
+    var(--color-bg-base) 0%,
+    transparent 100%
+  );
+}
+
+.marquee-fade-right {
+  right: 0;
+  background: linear-gradient(
+    to left,
+    var(--color-bg-base) 0%,
+    transparent 100%
+  );
+}
+
+.marquee-content {
+  display: flex;
+  width: max-content;
+  padding: 1.5rem 0;
+}
+
+.marquee-track {
+  display: flex;
+  gap: 2.5rem;
+  padding-right: 2.5rem; /* padding matches gap to ensure seamless loop */
+}
+
+.marquee-logo-card {
+  background: var(--color-surface); /* white or light neutral */
+  border-radius: 16px;
+  padding: 0.5rem 1.5rem; /* Reduced padding to increase image size */
+  min-width: 240px; /* tablet/desktop width */
+  max-width: 280px;
+  height: 130px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid rgba(0, 0, 0, 0.03);
+  transition:
+    transform var(--transition-normal),
+    box-shadow var(--transition-normal);
+}
+
+.marquee-logo-card:hover {
+  transform: scale(1.05); /* slight scale */
+  box-shadow: var(--shadow-md), var(--shadow-glow);
+}
+
+.marquee-logo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* perfectly maintain aspect ratio */
+  display: block;
+}
+
+.marquee-fallback-logo {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--color-text-main);
+  text-align: center;
+  width: 100%;
+}
+
+@media (max-width: 1024px) {
+  .marquee-logo-card {
+    min-width: 180px;
+    height: 100px;
+    padding: 0.5rem 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .trusted-section {
+    padding: 1.75rem 0;
+  }
+  .trusted-title {
+    font-size: 2rem;
+    margin-bottom: 1.25rem;
+  }
+  .marquee-logo-card {
+    min-width: 150px;
+    height: 90px;
+    padding: 0.5rem 0.5rem;
+    border-radius: 12px;
+  }
+  .marquee-track {
+    gap: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
