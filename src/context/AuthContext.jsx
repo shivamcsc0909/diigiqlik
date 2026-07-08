@@ -1,6 +1,8 @@
 // src/context/AuthContext.jsx
 import { createContext, useContext, useState } from "react";
 
+export const RAZORPAY_KEY_ID = "rzp_test_TB0lRMCdVDdoz3";
+
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {

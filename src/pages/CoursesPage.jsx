@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { RAZORPAY_KEY_ID } from "../context/AuthContext";
 
 const loadRazorpayScript = () => {
   return new Promise((resolve) => {
@@ -187,7 +188,7 @@ function CoursesPage() {
             return;
           }
 
-          const razorpayKey = import.meta.env.VITE_RAZORPAY_KEY_ID || "rzp_test_TB0lRMCdVDdoz3";
+          const razorpayKey = RAZORPAY_KEY_ID;
           const coursePrice = selectedPlan === "Professional" ? 4999 : 1999;
 
           const options = {
